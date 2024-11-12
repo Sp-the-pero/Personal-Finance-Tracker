@@ -1,34 +1,23 @@
 import streamlit as st
 from datetime import datetime
 from pytz import timezone
+import json
 
 TIMEZONE = timezone("Asia/Karachi")
 currentDay = datetime.now(TIMEZONE).strftime("%A") # Monday
 currentTime = datetime.now(TIMEZONE).strftime("%I:%M %p") # 11:05 PM
 currentDate = datetime.now(TIMEZONE).strftime("%d/%b/%Y") # 04/Nov/2024
 
-if "wallet" not in st.session_state:
-    st.session_state.wallet = 0
-
-# wallet = 0
-def calcWallet():
-    st.session_state.wallet = 0
-    for i, money in enumerate(st.session_state.datatable["Money"], start=0):
-        try:
-            amount = int(st.session_state.datatable["Amount"][i])
-        except ValueError:
-            continue
-        
-        # obal st.session_state.wallet
-        if money == "Spent":
-            st.session_state.wallet -= amount
-        else:
-            st.session_state.wallet += amount
-
-
-
-if "datatable" not in st.session_state:
-    st.session_state.datatable = {
+# wallet = 
+datatable = {"s": " "}
+try:
+    with open("data.txt") as f:
+        data = f.readlines()
+        wallet = int(data[0])
+        datatable = json.loads(data[1])
+except FileNotFoundError:
+    wallet = 0
+    datatable = {
         "Money": ["-"],
         "Amount": ["-"],
         "Reason": ["-"],
@@ -36,6 +25,20 @@ if "datatable" not in st.session_state:
         "Date": ["-"],
         "Time": ["-"]
     }
+
+def calcWallet():
+    global wallet
+    for i, money in enumerate(datatable["Money"], start=0):
+        try:
+            amount = int(datatable["Amount"][i])
+        except ValueError:
+            continue
+        
+        # obal wallet
+        if money == "Spent":
+            wallet -= amount
+        else:
+            wallet += amount
 
 # st.write(type(datatable))
 st.title("Personal Expense Tracker App")
@@ -45,9 +48,9 @@ with col1:
     st.subheader("Table")
 with col2:
     with st.container(border=True, height=50):
-        st.write(f"##### Wallet: Rs. {st.session_state.wallet}")
+        st.write(f"##### Wallet: Rs. {wallet}")
 
-st.table(st.session_state.datatable)
+st.table(datatable)
 
 # |------------------------------------ Now the Input Sections xD -------------------------------------|
 st.markdown("- - -")
@@ -71,13 +74,13 @@ st.write("**Day:** ", currentDay)
 st.write("**Date:** ", currentDate)
 
 if st.button("Add Record"):
-    st.session_state.datatable["Money"].append(money)
+    datatable["Money"].append(money)
     # datatable["Money"]
-    st.session_state.datatable["Amount"].append(amount)
-    st.session_state.datatable["Reason"].append(reason)
-    st.session_state.datatable["Day"].append(currentDay)
-    st.session_state.datatable["Date"].append(currentDate)
-    st.session_state.datatable["Time"].append(timeInput)
+    datatable["Amount"].append(amount)
+    datatable["Reason"].append(reason)
+    datatable["Day"].append(currentDay)
+    datatable["Date"].append(currentDate)
+    datatable["Time"].append(timeInput)
     calcWallet()
     pass
 
@@ -86,8 +89,11 @@ st.write("- - -")
 
 st.subheader("Delete A Record")
 
-rowNum = st.slider("Enter the index of record (from the table)", 0, len(st.session_state.datatable["Money"]))
+rowNum = st.slider("Enter the index of record (from the table)", 0, len(datatable["Money"]))
 if st.button("Delete Record"):
     calcWallet()
-    for key in st.session_state.datatable:
-        st.session_state.datatable[key].pop(rowNum)
+    for key in datatable:
+        datatable[key].pop(rowNum)
+
+with open("data.txt", "w") as f:
+    f.writelines([f"{wallet}\n", json.dumps(datatable)])
