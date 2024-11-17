@@ -9,20 +9,18 @@ currentTime = datetime.now(TIMEZONE).strftime("%I:%M %p") # 11:05 PM
 currentDate = datetime.now(TIMEZONE).strftime("%d/%b/%Y") # 04/Nov/2024
 
 def calcWallet():
-    # global wallet
-    ttl_amount = 0
+    global wallet
+    wallet = 0
     for i, money in enumerate(datatable["Money"], start=0):
         try:
             amount = int(datatable["Amount"][i])
             if money == "Spent":
-                ttl_amount -= amount
+                wallet -= amount
             else:
-                ttl_amount += amount
+                wallet += amount
         except ValueError:
             continue
-    return ttl_amount
 
-datatable = {"s": " "}
 try:
     with open("data.txt") as f:
         data = f.readlines()
@@ -39,7 +37,7 @@ except FileNotFoundError:
         "Time": ["-"]
     }
 
-wallet = calcWallet()
+calcWallet()
 
 # st.write(type(datatable))
 st.title("Personal Expense Tracker App")
@@ -90,11 +88,11 @@ st.write("- - -")
 
 st.subheader("Delete A Record")
 
-rowNum = st.slider("Enter the index of record (from the table)", 0, len(datatable["Money"]))
+rowNum = st.slider("Enter the index of record (from the table)", 0, (len(datatable["Money"])-1))
 if st.button("Delete Record"):
     calcWallet()
     for key in datatable:
         datatable[key].pop(rowNum)
 
 with open("data.txt", "w") as f:
-    f.writelines([json.dumps(datatable)])
+    f.write(json.dumps(datatable))
