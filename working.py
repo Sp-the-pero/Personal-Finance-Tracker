@@ -88,11 +88,19 @@ st.write("- - -")
 
 st.subheader("Delete A Record")
 
-rowNum = st.slider("Enter the index of record (from the table)", 0, (len(datatable["Money"])-1))
-if st.button("Delete Record"):
-    calcWallet()
-    for key in datatable:
-        datatable[key].pop(rowNum)
+if len(datatable["Money"]) == 1:
+    st.warning("Only one record present, pressing the button would delete it automatically.")
+    rowNum = 0  # Automatically selects the only available record.
+elif len(datatable["Money"]) != 0:
+    rowNum = st.slider("Enter the index of record (from the table)", 0, len(datatable["Money"]) - 1)
+
+if len(datatable["Money"]) == 0:
+    st.error("No data available to delete.")
+else:
+    if st.button("Delete Record"):
+        for key in datatable:
+            datatable[key].pop(rowNum)
+        calcWallet()
 
 with open("data.txt", "w") as f:
     f.write(json.dumps(datatable))
