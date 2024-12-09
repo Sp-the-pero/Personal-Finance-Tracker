@@ -61,10 +61,14 @@ amount = st.selectbox("Select the amount of money", ["50","100", "Other"])
 
 amount = amount if amount != "Other" else st.number_input("Enter the amount of money manually")
 
-with open("data.txt") as f:
-    data = f.readlines()
-    reasonsMoneySpent = loads(data[1]) 
-    reasonsMoneyRecieved = loads(data[2])
+try:
+    with open("data.txt") as f:
+        data = f.readlines()
+        reasonsMoneySpent = loads(data[1]) 
+        reasonsMoneyRecieved = loads(data[2])
+except FileNotFoundError:
+    reasonsMoneySpent = ["Other"]
+    reasonsMoneyRecieved = ["Other"]
 
 reasonsList = reasonsMoneyRecieved if money == "Recieved" else reasonsMoneySpent
 
