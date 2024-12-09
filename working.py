@@ -1,7 +1,7 @@
 import streamlit as st
 from datetime import datetime
 from pytz import timezone
-import json
+from json import dumps, loads
 
 TIMEZONE = timezone("Asia/Karachi")
 currentDay = datetime.now(TIMEZONE).strftime("%A") # Monday
@@ -11,12 +11,12 @@ currentDate = datetime.now(TIMEZONE).strftime("%d/%b/%Y") # 04/Nov/2024
 def calcWallet():
     global wallet
     wallet = 0
-    for i, money in enumerate(datatable["Money"], start=0):
+    for i, money in enumerate(datatable['Money']):
         try:
             amount = int(datatable["Amount"][i])
             if money == "Spent":
                 wallet -= amount
-            else:
+            elif money == "Recieved":
                 wallet += amount
         except ValueError:
             continue
@@ -25,7 +25,7 @@ try:
     with open("data.txt") as f:
         data = f.readlines()
         # wallet = int(data[0])
-        datatable = json.loads(data[0])
+        datatable = loads(data[0])
 except FileNotFoundError:
     # wallet = 0
     datatable = {
@@ -61,7 +61,12 @@ amount = st.selectbox("Select the amount of money", ["50","100", "Other"])
 
 amount = amount if amount != "Other" else st.number_input("Enter the amount of money manually")
 
-reasonsList = ["Daily Pocket Money", "Weekly Pocket Money", "Other"] if money == "Recieved" else ["French Fries", "Other"]
+with open("data.txt") as f:
+    data = f.readlines()
+    reasonsMoneySpent = loads(data[1]) 
+    reasonsMoneyRecieved = loads(data[2])
+
+reasonsList = reasonsMoneyRecieved if money == "Recieved" else reasonsMoneySpent
 
 reason = st.selectbox("Enter the Reason", reasonsList)
 reason = reason if "Other" is not reason else st.text_input("Enter the Reason")
@@ -103,4 +108,4 @@ else:
         calcWallet()
 
 with open("data.txt", "w") as f:
-    f.write(json.dumps(datatable))
+    f.writelines([dumps(datatable) + "\n", dumps(reasonsMoneySpent) + "\n", dumps(reasonsMoneyRecieved)])

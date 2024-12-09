@@ -7,12 +7,16 @@ App = st.Page(
     default=True
 )
 
-
 Data = st.Page(
     page="back.py", 
     title="Data"
 )
 
-nav = st.navigation([App, Data])
+Setting = st.Page(
+    page="setting.py",
+    title="Setting"
+)
+
+nav = st.navigation([App, Data, Setting])
 
 nav.run()
