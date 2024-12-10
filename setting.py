@@ -30,8 +30,8 @@ if st.button("Append Reason"):
 st.subheader("Money Recieving List")
 st.table(reasonsMoneyRecieved)
 
-st.write("#### Delete An Option - Reasons For Spending Money")
-optionToDelete = st.selectbox("Select an option to delete from the list.", reasonsMoneyRecieved)
+st.write("#### Delete An Option")
+optionToDelete = st.selectbox("Select an option to delete from the list. ", reasonsMoneyRecieved)
 
 if st.button("Delete "):
     reasonsMoneyRecieved.remove(optionToDelete)

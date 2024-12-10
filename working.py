@@ -73,7 +73,7 @@ except FileNotFoundError:
 reasonsList = reasonsMoneyRecieved if money == "Recieved" else reasonsMoneySpent
 
 reason = st.selectbox("Enter the Reason", reasonsList)
-reason = reason if "Other" is not reason else st.text_input("Enter the Reason")
+reason = reason if reason != "Other" else st.text_input("Enter the Reason")
 
 timeInput = st.selectbox("Select the time", ["Morning (Fajr - 12:00 Noon)", "Afternoon (12:01 PM - Asr)","Evening (Asr - Esha)", "Night (Esha - 12:00 AM)", "Midnight (Fajr - 12:00 Noon)"])
 
