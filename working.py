@@ -24,8 +24,11 @@ def calcWallet():
 try:
     with open("data.txt") as f:
         data = f.readlines()
-        # wallet = int(data[0])
         datatable = loads(data[0])
+        reasonsMoneySpent = loads(data[1]) 
+        reasonsMoneyRecieved = loads(data[2])
+        MoneyAmountList = loads(data[3])
+
 except FileNotFoundError:
     # wallet = 0
     datatable = {
@@ -36,10 +39,14 @@ except FileNotFoundError:
         "Date": ["-"],
         "Time": ["-"]
     }
+    reasonsMoneySpent = ["Other"]
+    reasonsMoneyRecieved = ["Other"]
+    MoneyAmountList = ["Other"]
 
 calcWallet()
 
 # st.write(type(datatable))
+# ----------------------------------------| Start Of UI |------------------------------------------
 st.title("Personal Expense Tracker App")
 
 col1, col2 = st.columns(2, gap='large')
@@ -57,25 +64,17 @@ st.subheader("Add New Record")
 
 money = st.selectbox("Enter the money change that occured",["Recieved","Spent"])
 
-amount = st.selectbox("Select the amount of money", ["50","100", "Other"])
+amount = st.selectbox("Select the amount of money", MoneyAmountList)
 
 amount = amount if amount != "Other" else st.number_input("Enter the amount of money manually")
 
-try:
-    with open("data.txt") as f:
-        data = f.readlines()
-        reasonsMoneySpent = loads(data[1]) 
-        reasonsMoneyRecieved = loads(data[2])
-except FileNotFoundError:
-    reasonsMoneySpent = ["Other"]
-    reasonsMoneyRecieved = ["Other"]
 
 reasonsList = reasonsMoneyRecieved if money == "Recieved" else reasonsMoneySpent
 
 reason = st.selectbox("Enter the Reason", reasonsList)
 reason = reason if reason != "Other" else st.text_input("Enter the Reason")
 
-timeInput = st.selectbox("Select the time", ["Morning (Fajr - 12:00 Noon)", "Afternoon (12:01 PM - Asr)","Evening (Asr - Esha)", "Night (Esha - 12:00 AM)", "Midnight (Fajr - 12:00 Noon)"])
+timeInput = st.selectbox("Select the time", ["Morning (Fajr - 12:00 Noon)", "Afternoon (12:01 PM - Asr)","Evening (Asr - Esha)", "Night (Esha - 12:00 AM)", "Midnight (12:00 Noon - Fajr)"])
 
 st.write("**Time:** ", currentTime)
 st.write("**Day:** ", currentDay)
@@ -111,5 +110,7 @@ else:
             datatable[key].pop(rowNum)
         calcWallet()
 
+
+# ----------------------------------------| Footer Of File |----------------------------------------
 with open("data.txt", "w") as f:
-    f.writelines([dumps(datatable) + "\n", dumps(reasonsMoneySpent) + "\n", dumps(reasonsMoneyRecieved)])
+    f.writelines([dumps(datatable) + "\n", dumps(reasonsMoneySpent) + "\n", dumps(reasonsMoneyRecieved) + "\n", dumps(MoneyAmountList)])
