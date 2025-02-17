@@ -2,6 +2,7 @@ import streamlit as st
 from datetime import datetime
 from pytz import timezone
 from json import dumps, loads
+# from time import sleep
 
 TIMEZONE = timezone("Asia/Karachi")
 currentDay = datetime.now(TIMEZONE).strftime("%A") # Monday
@@ -18,6 +19,8 @@ def calcWallet():
                 wallet -= amount
             elif money == "Recieved":
                 wallet += amount
+            elif money == "Base":
+                wallet = amount
         except ValueError:
             continue
 
@@ -49,10 +52,12 @@ calcWallet()
 # ----------------------------------------| Start Of UI |------------------------------------------
 st.title("Personal Expense Tracker App")
 
-col1, col2 = st.columns(2, gap='large')
+col1, col2, col3 = st.columns(3, gap='large')
 with col1:
     st.subheader("Table")
 with col2:
+    st.button("Refresh")
+with col3:
     with st.container(border=True, height=50):
         st.write(f"##### Wallet: Rs. {wallet}")
 
@@ -62,7 +67,7 @@ st.table(datatable)
 st.markdown("- - -")
 st.subheader("Add New Record")
 
-money = st.selectbox("Enter the money change that occured",["Recieved","Spent"])
+money = st.selectbox("Enter the money change that occured",["Recieved","Spent","Base"])
 
 amount = st.selectbox("Select the amount of money", MoneyAmountList)
 
@@ -70,9 +75,11 @@ amount = amount if amount != "Other" else st.number_input("Enter the amount of m
 
 
 reasonsList = reasonsMoneyRecieved if money == "Recieved" else reasonsMoneySpent
-
-reason = st.selectbox("Enter the Reason", reasonsList)
-reason = reason if reason != "Other" else st.text_input("Enter the Reason")
+if money!="Base":
+    reason = st.selectbox("Enter the Reason", reasonsList)
+    reason = reason if reason != "Other" else st.text_input("Enter the Reason")
+else:
+    reason="     "
 
 timeInput = st.selectbox("Select the time", ["Morning (Fajr - 12:00 Noon)", "Afternoon (12:01 PM - Asr)","Evening (Asr - Esha)", "Night (Esha - 12:00 AM)", "Midnight (12:00 Noon - Fajr)"])
 

@@ -1,10 +1,10 @@
 import streamlit as st
 from json import loads, dumps
 
-st.title("Personal Settings")
+st.title("Personal Settings ")
 st.write("---")
 st.header("1. Reasons Lists")
-
+# ":material-settings:"
 with open("data.txt") as f:
     data = f.readlines()
     logs = loads(data[0])

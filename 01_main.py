@@ -3,18 +3,20 @@ import streamlit as st
 App = st.Page(
     page="working.py",
     title="App",
-    icon="",
+    icon=":material/grid_view:",
     default=True
 )
 
 Data = st.Page(
     page="back.py", 
-    title="Data"
+    title="Data",
+    icon=":material/database:"
 )
 
 Setting = st.Page(
     page="setting.py",
-    title="Setting"
+    title="Setting",
+    icon=":material/settings:"
 )
 
 nav = st.navigation([App, Data, Setting])
